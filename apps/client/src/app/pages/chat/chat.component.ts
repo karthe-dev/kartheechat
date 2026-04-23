@@ -382,7 +382,7 @@ import { ToastService } from '../../services/toast.service';
                 <button class="btn-emoji" (click)="showEmojiPicker.set(!showEmojiPicker())">😊</button>
                 <button class="btn-emoji" (click)="fileInput.click()">📎</button>
                 <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.txt" />
-                <textarea #msgInput [(ngModel)]="messageText" placeholder="Type a message... *bold* _italic_ ~strike~" (keydown)="onKeyDown($event)" (input)="onTyping()" rows="1"></textarea>
+                <textarea #msgInput [(ngModel)]="messageText" placeholder="Type a message..." (keydown)="onKeyDown($event)" (input)="onTyping()" rows="1"></textarea>
                 <button (click)="send()">Send</button>
               </div>
               @if (filePreview()) {
