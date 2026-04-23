@@ -52,6 +52,7 @@ export class ChatService {
   unreadCounts = signal<Map<string, number>>(new Map());
   lastMessages = signal<Map<string, Message>>(new Map());
   pinnedMessage = signal<Message | null>(null);
+  messagesLoading = signal(false);
 
   onIncomingMessage: ((msg: Message) => void) | null = null;
 
@@ -257,10 +258,12 @@ export class ChatService {
     if (isMember) {
       this.socket.emit('joinRoom', { roomId: room.id });
       this.socket.emit('markRead', { roomId: room.id });
+      this.messagesLoading.set(true);
       const since = room.isGroup && room.joinedAt && userId ? room.joinedAt[userId] : undefined;
       const params = since ? `?since=${since}` : '';
       this.http.get<Message[]>(`${API}/rooms/${room.id}/messages${params}`).subscribe((m) => {
         this.activeMessages.set(m);
+        this.messagesLoading.set(false);
         if (m.length > 0) {
           this.lastMessages.update((lm) => new Map(lm).set(room.id, m[m.length - 1]));
         }

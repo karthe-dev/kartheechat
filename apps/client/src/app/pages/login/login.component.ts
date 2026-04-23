@@ -16,7 +16,13 @@ import { ToastService } from '../../services/toast.service';
         <form (ngSubmit)="submit()">
           <input [(ngModel)]="username" name="username" placeholder="Username" required />
           <input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
-          <button type="submit">{{ isRegister() ? 'Register' : 'Login' }}</button>
+          <button type="submit" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              {{ isRegister() ? 'Register' : 'Login' }}
+            }
+          </button>
         </form>
         <p class="toggle" (click)="isRegister.set(!isRegister())">
           {{ isRegister() ? 'Already have an account? Login' : "Don't have an account? Register" }}
@@ -36,8 +42,11 @@ import { ToastService } from '../../services/toast.service';
     form { padding: 0 2rem; }
     input:focus { border-color: #008069; background: #fff; }
     input::placeholder { color: #8696a0; }
-    button { width: 100%; padding: 0.75rem; background: #008069; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    button { width: 100%; padding: 0.75rem; background: #008069; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 46px; }
     button:hover { background: #006b57; }
+    button:disabled { background: #66b8a8; cursor: not-allowed; }
+    .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .toggle { text-align: center; color: #008069; cursor: pointer; margin-top: 1rem; font-size: 0.85rem; padding: 0 2rem; }
     .toggle:hover { text-decoration: underline; }
     .error { background: #fce4e4; color: #d32f2f; padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; font-size: 0.85rem; }
@@ -54,22 +63,26 @@ export class LoginComponent {
   username = '';
   password = '';
   isRegister = signal(false);
+  loading = signal(false);
   error = signal('');
 
   constructor(private auth: AuthService, private router: Router, private toast: ToastService) {}
 
   submit() {
     this.error.set('');
+    this.loading.set(true);
     const obs = this.isRegister()
       ? this.auth.register(this.username, this.password)
       : this.auth.login(this.username, this.password);
 
     obs.subscribe({
       next: () => {
+        this.loading.set(false);
         this.toast.success('Welcome, ' + this.username + '! 👋');
         this.router.navigate(['/chat']);
       },
       error: (e) => {
+        this.loading.set(false);
         const msg = e.error?.message || 'Something went wrong';
         this.error.set(msg);
         this.toast.error(msg);

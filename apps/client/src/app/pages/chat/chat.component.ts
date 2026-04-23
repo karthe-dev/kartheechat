@@ -278,6 +278,12 @@ import { ToastService } from '../../services/toast.service';
               </div>
             }
             <div class="messages" #messagesContainer>
+              @if (chat.messagesLoading()) {
+                <div class="messages-loader">
+                  <div class="chat-spinner"></div>
+                  <span>Loading messages...</span>
+                </div>
+              }
               <div class="messages-inner">
               @for (msg of chat.activeMessages(); track msg.id) {
                 @if (msg.isSystem) {
