@@ -10,8 +10,7 @@ import { ToastService } from '../../services/toast.service';
     template: `
     <div class="auth-container">
       <div class="auth-card">
-        <div class="auth-logo">💬</div>
-        <h2>Welcome to KartheeChat</h2>
+        <img src="banner.jpg" alt="KartheeChat" class="auth-banner" />
         <p class="auth-subtitle">{{ isRegister() ? 'Sign up to start chatting' : 'Login to continue' }}</p>
         @if (error()) { <div class="error">{{ error() }}</div> }
         <form (ngSubmit)="submit()">
@@ -27,28 +26,28 @@ import { ToastService } from '../../services/toast.service';
     </div>
   `,
     styles: [`
-    .auth-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; height: 100dvh; background: linear-gradient(180deg, #008069 0%, #008069 30%, #f0f2f5 30%); }
-    :host-context(body.dark-theme) .auth-container { background: linear-gradient(180deg, #1f2c34 0%, #1f2c34 30%, #0b141a 30%); }
-    .auth-card { background: #fff; padding: 2.5rem 2rem; border-radius: 12px; width: 360px; max-width: 92vw; color: #111b21; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    :host-context(body.dark-theme) .auth-card { background: #1f2c34; color: #e9edef; }
-    :host-context(body.dark-theme) input { background: #111b21; border-color: #2a3942; color: #e9edef; }
-    :host-context(body.dark-theme) input:focus { border-color: #00a884; background: #1f2c34; }
-    :host-context(body.dark-theme) .auth-subtitle { color: #8696a0; }
-    :host-context(body.dark-theme) .toggle { color: #00a884; }
-    .auth-logo { text-align: center; font-size: 3rem; margin-bottom: 0.5rem; }
-    h2 { text-align: center; margin-bottom: 0.25rem; color: #111b21; font-size: 1.4rem; }
-    .auth-subtitle { text-align: center; color: #667781; font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .auth-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; height: 100dvh; background: linear-gradient(160deg, #c8e6e0 0%, #d4eaf7 40%, #e8f0f5 100%); }
+    :host-context(body.dark-theme) .auth-container { background: linear-gradient(160deg, #0b141a 0%, #111b21 40%, #1a2730 100%); }
+    .auth-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); padding: 0 0 2rem; border-radius: 16px; width: 400px; max-width: 92vw; color: #111b21; box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden; }
+    :host-context(body.dark-theme) .auth-card { background: rgba(31,44,52,0.9); color: #e9edef; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+    .auth-banner { width: 100%; display: block; border-radius: 16px 16px 0 0; }
+    .auth-subtitle { text-align: center; color: #667781; font-size: 0.85rem; margin: 1rem 0 1.25rem; padding: 0 2rem; }
     input { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #d1d7db; border-radius: 8px; background: #f0f2f5; color: #111b21; box-sizing: border-box; font-size: 0.95rem; outline: none; }
+    form { padding: 0 2rem; }
     input:focus { border-color: #008069; background: #fff; }
     input::placeholder { color: #8696a0; }
     button { width: 100%; padding: 0.75rem; background: #008069; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; }
     button:hover { background: #006b57; }
-    .toggle { text-align: center; color: #008069; cursor: pointer; margin-top: 1rem; font-size: 0.85rem; }
+    .toggle { text-align: center; color: #008069; cursor: pointer; margin-top: 1rem; font-size: 0.85rem; padding: 0 2rem; }
     .toggle:hover { text-decoration: underline; }
     .error { background: #fce4e4; color: #d32f2f; padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; font-size: 0.85rem; }
     .dev-credit { position: fixed; bottom: 1rem; left: 0; right: 0; text-align: center; color: #8696a0; font-size: 0.75rem; }
     .heart { color: #e53935; }
     :host-context(body.dark-theme) .dev-credit { color: #667781; }
+    :host-context(body.dark-theme) input { background: #111b21; border-color: #2a3942; color: #e9edef; }
+    :host-context(body.dark-theme) input:focus { border-color: #00a884; background: #1f2c34; }
+    :host-context(body.dark-theme) .auth-subtitle { color: #8696a0; }
+    :host-context(body.dark-theme) .toggle { color: #00a884; }
   `]
 })
 export class LoginComponent {
