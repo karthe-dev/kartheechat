@@ -96,27 +96,37 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 --   SELECT clear_old_messages(7);
 --
 -- ============================================
--- CRON JOB (auto-cleanup old messages)
--- ============================================
--- Go to Supabase Dashboard → Database → Extensions
--- Enable "pg_cron" extension, then run:
---
---   SELECT cron.schedule(
---     'cleanup-old-messages',
---     '0 3 * * *',  -- Every day at 3 AM UTC
---     $$ SELECT clear_old_messages(30) $$
---   );
---
--- To remove the cron job:
---   SELECT cron.unschedule('cleanup-old-messages');
---
--- ============================================
 -- STORAGE BUCKET CLEANUP
 -- ============================================
--- Supabase Storage files must be deleted from
--- the dashboard or via this SQL (if using pg_net):
+-- Delete only chat files (keep avatars):
+-- DELETE FROM storage.objects WHERE bucket_id = 'KartheBucket' AND name NOT LIKE 'avatars/%';
 --
--- Manual: Dashboard → Storage → KartheBucket → Select All → Delete
---
--- Or empty entire bucket via SQL:
+-- Delete everything in bucket (including avatars):
 -- DELETE FROM storage.objects WHERE bucket_id = 'KartheBucket';
+--
+-- Manual: Dashboard → Storage → KartheBucket → Select files → Delete
+--
+-- ============================================
+-- WEEKLY CRON JOB (keeps users + avatars)
+-- ============================================
+-- Enable pg_cron extension first:
+-- Supabase Dashboard → Database → Extensions → pg_cron → Enable
+--
+-- Schedule weekly cleanup (Sunday midnight UTC):
+--
+--   SELECT cron.schedule(
+--     'weekly-cleanup',
+--     '0 0 * * 0',
+--     $$
+--       DELETE FROM messages;
+--       DELETE FROM room_members;
+--       DELETE FROM rooms;
+--       DELETE FROM storage.objects WHERE bucket_id = 'KartheBucket' AND name NOT LIKE 'avatars/%';
+--     $$
+--   );
+--
+-- Verify scheduled jobs:
+--   SELECT * FROM cron.job;
+--
+-- Remove the cron job:
+--   SELECT cron.unschedule('weekly-cleanup');
