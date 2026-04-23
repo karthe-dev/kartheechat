@@ -1,0 +1,73 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+
+@media (max-width: 576px) {
+  ::-webkit-scrollbar { width: 3px; }
+}
+
+// ── Light Theme (default) ──
+body {
+  --bg-main: #eae6df;
+  --bg-sidebar: #fff;
+  --bg-header: #008069;
+  --bg-chat: #efeae2;
+  --bg-input: #f0f2f5;
+  --bg-bubble-own: #d9fdd3;
+  --bg-bubble-other: #fff;
+  --bg-panel: #f0f2f5;
+  --bg-hover: #f0f2f5;
+  --bg-active: #e7f8f2;
+  --bg-modal: #fff;
+  --text-primary: #111b21;
+  --text-secondary: #667781;
+  --text-header: #fff;
+  --text-green: #008069;
+  --border: #d1d7db;
+  --border-light: #e9edef;
+  --border-room: #f0f2f5;
+  --scrollbar: #bbb;
+  --system-msg: #ffeeba;
+  --shadow: rgba(11,20,26,0.13);
+}
+
+// ── Dark Theme ──
+body.dark-theme {
+  --bg-main: #0b141a;
+  --bg-sidebar: #111b21;
+  --bg-header: #1f2c34;
+  --bg-chat: #0b141a;
+  --bg-input: #1f2c34;
+  --bg-bubble-own: #005c4b;
+  --bg-bubble-other: #1f2c34;
+  --bg-panel: #1f2c34;
+  --bg-hover: #202c33;
+  --bg-active: #2a3942;
+  --bg-modal: #1f2c34;
+  --text-primary: #e9edef;
+  --text-secondary: #8696a0;
+  --text-header: #e9edef;
+  --text-green: #00a884;
+  --border: #2a3942;
+  --border-light: #2a3942;
+  --border-room: #222d34;
+  --scrollbar: #3b4a54;
+  --system-msg: #1f2c34;
+  --shadow: rgba(0,0,0,0.3);
+}

@@ -1,0 +1,25 @@
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src\**\*[39m
+[33m[nodemon] watching extensions: ts[39m
+[32m[nodemon] starting `ts-node -r tsconfig-paths/register src/main.ts`[39m
+c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/auth/auth.service.ts(15,95): error TS2353: Object literal may only specify known properties, and 'theme' does not exist in type 'Omit<User, "password">'.
+src/auth/auth.service.ts(24,95): error TS2353: Object literal may only specify known properties, and 'theme' does not exist in type 'Omit<User, "password">'.
+
+    at createTSError (c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (c:\Karthe\Angular\chat-app\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2353, 2353 ]
+}
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

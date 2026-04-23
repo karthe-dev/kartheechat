@@ -1,0 +1,17 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "start:server": "npm run start --workspace=apps/server",
+    "start:client": "npm run start --workspace=apps/client",
+    "dev": "concurrently \"npm run start:dev --workspace=apps/server\" \"npm run start --workspace=apps/client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
