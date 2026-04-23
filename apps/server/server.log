@@ -655,3 +655,46 @@ Server running on http://localhost:3000
 (node:51596) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
 (Use `node --trace-warnings ...` to show where the warning was created)
 [31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `ts-node -r tsconfig-paths/register src/main.ts`[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +19ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupabaseModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mChatModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "joinRoom" message[39m[38;5;3m +29ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "sendMessage" message[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "typing" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "stopTyping" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "markRead" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "reactMessage" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mChatGateway subscribed to the "forwardMessage" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/register, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/me, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/avatar, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/reset-password, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/theme, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mChatController {/api/chat}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/dm/:userId, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/group, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/group/:roomId/join, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/group/:roomId/leave, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/rooms, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/groups, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/rooms/:roomId/messages, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/upload/:roomId, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/forward, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/forward-to-user, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/rooms/:roomId/pin, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/messages/:messageId/delete-for-me, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/chat/messages/:messageId/delete-for-everyone, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 18124  - [39m23/04/2026, 1:53:14 pm [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +1ms[39m
+Server running on port 3000
+(node:18124) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
+(Use `node --trace-warnings ...` to show where the warning was created)
