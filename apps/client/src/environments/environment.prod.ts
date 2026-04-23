@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://kartheechat-server.onrender.com',
+  apiUrl: 'https://kartheechat.onrender.com',
 };
