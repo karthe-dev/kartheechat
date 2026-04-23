@@ -2,8 +2,9 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { io, Socket } from 'socket.io-client';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
-const API = 'http://localhost:3000/api/chat';
+const API = environment.apiUrl + '/api/chat';
 
 export interface Room {
   id: string;
@@ -57,7 +58,7 @@ export class ChatService {
   constructor(private http: HttpClient, private auth: AuthService) {}
 
   connect() {
-    this.socket = io('http://localhost:3000', { auth: { token: this.auth.token } });
+    this.socket = io(environment.apiUrl, { auth: { token: this.auth.token } });
     this.loadAllGroups();
 
     this.socket.on('newMessage', (msg: Message) => {

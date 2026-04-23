@@ -2,8 +2,9 @@ import { Injectable, signal, computed, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-const API = 'http://localhost:3000/api/auth';
+const API = environment.apiUrl + '/api/auth';
 
 interface UserInfo { id: string; username: string; avatarUrl?: string; theme?: string; }
 interface AuthResponse { token: string; user: UserInfo; }
