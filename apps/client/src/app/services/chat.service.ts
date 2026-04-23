@@ -53,6 +53,7 @@ export class ChatService {
   lastMessages = signal<Map<string, Message>>(new Map());
   pinnedMessage = signal<Message | null>(null);
   messagesLoading = signal(false);
+  roomsLoading = signal(false);
 
   onIncomingMessage: ((msg: Message) => void) | null = null;
 
@@ -227,8 +228,10 @@ export class ChatService {
   }
 
   loadRooms() {
+    this.roomsLoading.set(true);
     this.http.get<Room[]>(`${API}/rooms`).subscribe((r) => {
       this.rooms.set(r);
+      this.roomsLoading.set(false);
       // Load last message for each room
       r.forEach((room) => {
         const userId = this.auth.user()?.id;

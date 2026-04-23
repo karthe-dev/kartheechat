@@ -698,3 +698,4 @@ Server running on http://localhost:3000
 Server running on port 3000
 (node:18124) Warning: Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' makes TLS connections and HTTPS requests insecure by disabling certificate verification.
 (Use `node --trace-warnings ...` to show where the warning was created)
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

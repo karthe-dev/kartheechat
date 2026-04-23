@@ -26,7 +26,7 @@ import { ToastService } from '../../services/toast.service';
           <div class="header-actions">
             <button class="btn-sm" (click)="toggleTheme()">{{ auth.isDark() ? '☀️' : '🌙' }}</button>
             <button class="btn-sm" (click)="goToSettings()">⚙️</button>
-            <button class="btn-sm" (click)="auth.logout(); chat.disconnect()">Logout</button>
+            <button class="btn-sm" (click)="onLogout()">Logout</button>
           </div>
         </div>
 
@@ -55,6 +55,12 @@ import { ToastService } from '../../services/toast.service';
             </div>
           }
           <div class="room-list">
+            @if (chat.roomsLoading()) {
+              <div class="messages-loader">
+                <div class="chat-spinner"></div>
+                <span>Loading chats...</span>
+              </div>
+            }
             @for (room of filteredRooms(); track room.id) {
               <div class="room-item" [class.active]="chat.activeRoom()?.id === room.id" [class.has-unread]="getUnreadCount(room.id) > 0" (click)="onRoomSelect(room)">
                 <div class="room-avatar" [class.online]="!room.isGroup && isUserOnline(room)">
@@ -645,6 +651,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   openFile(url: string) { window.open(url, '_blank'); }
 
   goToSettings() { this.router.navigate(['/settings']); }
+
+  onLogout() {
+    this.chat.disconnect();
+    this.auth.logout();
+  }
 
   toggleTheme() {
     this.auth.toggleTheme().subscribe();

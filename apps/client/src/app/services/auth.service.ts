@@ -42,7 +42,7 @@ export class AuthService {
     localStorage.removeItem('chat_token');
     localStorage.removeItem('chat_user');
     this.currentUser.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
   getUsers() {
