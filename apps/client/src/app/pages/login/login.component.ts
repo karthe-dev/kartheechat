@@ -23,11 +23,11 @@ import { ToastService } from '../../services/toast.service';
           {{ isRegister() ? 'Already have an account? Login' : "Don't have an account? Register" }}
         </p>
       </div>
-      <p class="dev-credit">Developed by Karthick <span class="heart">❤️</span> Ekambaram</p>
+      <p class="dev-credit"><span class="heart">❤️</span> Developed by Karthick Ekambaram</p>
     </div>
   `,
     styles: [`
-    .auth-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(180deg, #008069 0%, #008069 30%, #f0f2f5 30%); }
+    .auth-container { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; height: 100dvh; background: linear-gradient(180deg, #008069 0%, #008069 30%, #f0f2f5 30%); }
     :host-context(body.dark-theme) .auth-container { background: linear-gradient(180deg, #1f2c34 0%, #1f2c34 30%, #0b141a 30%); }
     .auth-card { background: #fff; padding: 2.5rem 2rem; border-radius: 12px; width: 360px; max-width: 92vw; color: #111b21; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     :host-context(body.dark-theme) .auth-card { background: #1f2c34; color: #e9edef; }
@@ -46,8 +46,8 @@ import { ToastService } from '../../services/toast.service';
     .toggle { text-align: center; color: #008069; cursor: pointer; margin-top: 1rem; font-size: 0.85rem; }
     .toggle:hover { text-decoration: underline; }
     .error { background: #fce4e4; color: #d32f2f; padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; font-size: 0.85rem; }
-    .dev-credit { text-align: center; color: #8696a0; font-size: 0.75rem; margin-top: 1.5rem; }
-    .heart { color: #e53935; font-size: 0.8rem; }
+    .dev-credit { position: fixed; bottom: 1rem; left: 0; right: 0; text-align: center; color: #8696a0; font-size: 0.75rem; }
+    .heart { color: #e53935; }
     :host-context(body.dark-theme) .dev-credit { color: #667781; }
   `]
 })
