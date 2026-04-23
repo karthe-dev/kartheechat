@@ -23,6 +23,7 @@ import { ToastService } from '../../services/toast.service';
           {{ isRegister() ? 'Already have an account? Login' : "Don't have an account? Register" }}
         </p>
       </div>
+      <p class="dev-credit">Developed by Karthick <span class="heart">❤️</span> Ekambaram</p>
     </div>
   `,
     styles: [`
@@ -45,6 +46,9 @@ import { ToastService } from '../../services/toast.service';
     .toggle { text-align: center; color: #008069; cursor: pointer; margin-top: 1rem; font-size: 0.85rem; }
     .toggle:hover { text-decoration: underline; }
     .error { background: #fce4e4; color: #d32f2f; padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem; text-align: center; font-size: 0.85rem; }
+    .dev-credit { text-align: center; color: #8696a0; font-size: 0.75rem; margin-top: 1.5rem; }
+    .heart { color: #e53935; font-size: 0.8rem; }
+    :host-context(body.dark-theme) .dev-credit { color: #667781; }
   `]
 })
 export class LoginComponent {
