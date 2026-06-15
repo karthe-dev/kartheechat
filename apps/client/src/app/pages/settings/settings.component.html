@@ -1,0 +1,43 @@
+<div class="settings-page">
+  <div class="settings-card">
+    <button class="back-btn" (click)="router.navigate(['/chat'])">← Back to Chat</button>
+    <h2>Account Settings</h2>
+
+    <!-- Avatar Section -->
+    <div class="section">
+      <h3>Profile Photo</h3>
+      <div class="avatar-section">
+        <div class="avatar-preview" (click)="avatarInput.click()">
+          @if (auth.user()?.avatarUrl) {
+            <img [src]="auth.user()!.avatarUrl" alt="avatar" />
+          } @else {
+            <span class="avatar-letter">{{ auth.user()?.username?.charAt(0)?.toUpperCase() }}</span>
+          }
+          <div class="avatar-overlay">📷</div>
+        </div>
+        <input #avatarInput type="file" hidden accept="image/*" (change)="onAvatarSelected($event)" />
+        <div class="avatar-info">
+          <span class="avatar-name">{{ auth.user()?.username }}</span>
+          <span class="avatar-hint">Click photo to change (max 2MB)</span>
+        </div>
+      </div>
+      @if (avatarMsg()) {
+        <div class="msg" [class.error]="avatarMsg()!.startsWith('Error')">{{ avatarMsg() }}</div>
+      }
+    </div>
+
+    <!-- Password Section -->
+    <div class="section">
+      <h3>Change Password</h3>
+      <form (ngSubmit)="changePassword()">
+        <input [(ngModel)]="oldPassword" name="old" type="password" placeholder="Current password" required />
+        <input [(ngModel)]="newPassword" name="new" type="password" placeholder="New password" required />
+        <input [(ngModel)]="confirmPassword" name="confirm" type="password" placeholder="Confirm new password" required />
+        <button type="submit" [disabled]="!oldPassword || !newPassword || newPassword !== confirmPassword">Update Password</button>
+      </form>
+      @if (pwMsg()) {
+        <div class="msg" [class.error]="pwMsg()!.startsWith('Error')">{{ pwMsg() }}</div>
+      }
+    </div>
+  </div>
+</div>

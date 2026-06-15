@@ -2,447 +2,16 @@ import { Component, OnInit, OnDestroy, signal, computed, ViewChild, ElementRef, 
 import { FormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 import { ChatService, Room, Message } from '../../services/chat.service';
 import { ToastService } from '../../services/toast.service';
+import { EMOJI_CATEGORIES, QUICK_REACTIONS, formatMessageContent, formatFileSize } from './utils/chat.utils';
 
 @Component({
     selector: 'app-chat',
     imports: [FormsModule, CommonModule, DatePipe],
-    template: `
-    <div class="chat-layout">
-      <aside class="sidebar" [class.mobile-hidden]="showMobileChat()">
-        <div class="sidebar-header">
-          <div class="header-user" (click)="goToSettings()" style="cursor:pointer">
-            <div class="avatar avatar-sm">
-              @if (auth.user()?.avatarUrl) {
-                <img [src]="auth.user()!.avatarUrl" class="avatar-img" />
-              } @else {
-                {{ auth.user()?.username?.charAt(0)?.toUpperCase() }}
-              }
-            </div>
-            <span class="header-username">{{ auth.user()?.username }}</span>
-          </div>
-          <div class="header-actions">
-            <button class="btn-sm" (click)="toggleTheme()">{{ auth.isDark() ? '☀️' : '🌙' }}</button>
-            <button class="btn-sm" (click)="goToSettings()">⚙️</button>
-            <button class="btn-sm" (click)="onLogout()">Logout</button>
-          </div>
-        </div>
-
-        <!-- Search / Actions -->
-        <div class="sidebar-actions">
-          <button class="btn-action" [class.active]="activeTab() === 'chats'" (click)="activeTab.set('chats')">Chats</button>
-          <button class="btn-action" [class.active]="activeTab() === 'users'" (click)="activeTab.set('users'); refreshUsers()">Users</button>
-          <button class="btn-action groups-btn" [class.active]="activeTab() === 'groups'" (click)="openGroups()">
-            Groups @if (chat.newGroupAvailable()) { <span class="new-badge">NEW</span> }
-          </button>
-        </div>
-        <div class="search-bar">
-          <input [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" placeholder="Search chats, users..." />
-        </div>
-
-        <!-- TAB: Chats -->
-        @if (activeTab() === 'chats') {
-          <div class="tab-header">
-            <span>Recent Chats</span>
-            <button class="btn-new-group" (click)="showNewGroup.set(!showNewGroup())">+ Group</button>
-          </div>
-          @if (showNewGroup()) {
-            <div class="panel">
-              <input [(ngModel)]="groupName" placeholder="Group name" (keyup.enter)="createGroup()" />
-              <button class="btn-action" (click)="createGroup()">Create</button>
-            </div>
-          }
-          <div class="room-list">
-            @if (chat.roomsLoading()) {
-              <div class="messages-loader">
-                <div class="chat-spinner"></div>
-                <span>Loading chats...</span>
-              </div>
-            }
-            @for (room of filteredRooms(); track room.id) {
-              <div class="room-item" [class.active]="chat.activeRoom()?.id === room.id" [class.has-unread]="getUnreadCount(room.id) > 0" (click)="onRoomSelect(room)">
-                <div class="room-avatar" [class.online]="!room.isGroup && isUserOnline(room)">
-                  <div class="avatar">
-                    @if (getRoomAvatar(room)) {
-                      <img [src]="getRoomAvatar(room)" class="avatar-img" />
-                    } @else {
-                      {{ getRoomInitial(room) }}
-                    }
-                  </div>
-                  @if (!room.isGroup && isUserOnline(room)) { <span class="status-dot"></span> }
-                </div>
-                <div class="room-details">
-                  <div class="room-top">
-                    <span class="room-name">{{ getRoomName(room) }}</span>
-                    @if (getLastMessage(room.id)) {
-                      <span class="room-time">{{ getLastMessage(room.id)!.timestamp | date:'shortTime' }}</span>
-                    }
-                  </div>
-                  <div class="room-bottom">
-                    @if (getRoomTypingText(room.id)) {
-                      <span class="room-preview typing-text">{{ getRoomTypingText(room.id) }}</span>
-                    } @else {
-                      <span class="room-preview">
-                        @if (room.isGroup) { <span class="preview-icon">👥</span> }
-                        {{ getLastMessagePreview(room.id) }}
-                      </span>
-                    }
-                    @if (getUnreadCount(room.id) > 0) {
-                      <span class="unread-badge">{{ getUnreadCount(room.id) }}</span>
-                    }
-                  </div>
-                </div>
-              </div>
-            } @empty {
-              <div class="empty-text">No conversations yet</div>
-            }
-          </div>
-        }
-
-        <!-- TAB: Users -->
-        @if (activeTab() === 'users') {
-          <div class="tab-header"><span>All Users</span></div>
-          <div class="room-list">
-            @for (u of filteredUsers(); track u.id) {
-              <div class="room-item" (click)="startDm(u.id)">
-                <div class="room-avatar" [class.online]="chat.onlineUserIds().has(u.id)">
-                  <div class="avatar">
-                    @if (u.avatarUrl) {
-                      <img [src]="u.avatarUrl" class="avatar-img" />
-                    } @else {
-                      {{ u.username.charAt(0).toUpperCase() }}
-                    }
-                  </div>
-                  @if (chat.onlineUserIds().has(u.id)) { <span class="status-dot"></span> }
-                </div>
-                <div class="room-details">
-                  <div class="room-top">
-                    <span class="room-name">{{ u.username }}</span>
-                  </div>
-                  <div class="room-bottom">
-                    <span class="room-preview user-status" [class.online]="chat.onlineUserIds().has(u.id)">
-                      {{ chat.onlineUserIds().has(u.id) ? 'online' : 'offline' }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            } @empty {
-              <div class="empty-text">No other users</div>
-            }
-          </div>
-        }
-
-        <!-- TAB: Groups -->
-        @if (activeTab() === 'groups') {
-          <div class="tab-header"><span>Available Groups</span></div>
-          <div class="room-list">
-            @for (group of filteredGroups(); track group.id) {
-              <div class="room-item" (click)="onGroupClick(group)">
-                <div class="room-avatar">
-                  <div class="avatar group-avatar">👥</div>
-                </div>
-                <div class="room-details">
-                  <div class="room-top">
-                    <span class="room-name">{{ group.name }}</span>
-                    <span class="room-time">{{ group.members.length }} members</span>
-                  </div>
-                  <div class="room-bottom">
-                    @if (isJoined(group)) {
-                      <span class="room-preview user-status online">Joined</span>
-                    } @else {
-                      <button class="btn-join" (click)="$event.stopPropagation(); joinGroup(group.id)">Join</button>
-                    }
-                  </div>
-                </div>
-              </div>
-            } @empty {
-              <div class="empty-text">No groups available</div>
-            }
-          </div>
-        }
-
-        @if (pendingJoinGroup()) {
-          <div class="panel join-prompt">
-            <div class="join-prompt-text">Join <strong>{{ pendingJoinGroup()!.name }}</strong>?</div>
-            <div class="join-prompt-actions">
-              <button class="btn-join" (click)="confirmJoin()">Join</button>
-              <button class="btn-action" (click)="pendingJoinGroup.set(null)">Cancel</button>
-            </div>
-          </div>
-        }
-      </aside>
-
-      <!-- Chat Area -->
-      <main class="chat-area" [class.mobile-visible]="showMobileChat()">
-        @if (forwardingMsg()) {
-          <div class="forward-overlay" (click)="forwardingMsg.set(null)">
-            <div class="forward-modal" (click)="$event.stopPropagation()">
-              <div class="forward-header">
-                <span>Forward to...</span>
-                <button class="file-remove" (click)="forwardingMsg.set(null)">✕</button>
-              </div>
-              <div class="forward-tabs">
-                <button [class.active]="forwardTab() === 'chats'" (click)="forwardTab.set('chats')">Chats</button>
-                <button [class.active]="forwardTab() === 'users'" (click)="forwardTab.set('users')">Users</button>
-              </div>
-              <div class="forward-list">
-                @if (forwardTab() === 'chats') {
-                  @for (room of chat.rooms(); track room.id) {
-                    <div class="room-item" (click)="confirmForward(room.id)">
-                      <div class="avatar">
-                        @if (getRoomAvatar(room)) {
-                          <img [src]="getRoomAvatar(room)" class="avatar-img" />
-                        } @else {
-                          {{ getRoomInitial(room) }}
-                        }
-                      </div>
-                      <div class="forward-item-info">
-                        <span class="room-name">{{ getRoomName(room) }}</span>
-                        @if (room.isGroup) { <span class="forward-item-sub">👥 Group</span> }
-                      </div>
-                    </div>
-                  } @empty {
-                    <div class="forward-empty">No chats yet</div>
-                  }
-                }
-                @if (forwardTab() === 'users') {
-                  @for (u of otherUsers(); track u.id) {
-                    <div class="room-item" (click)="confirmForwardToUser(u.id)">
-                      <div class="avatar">
-                        @if (u.avatarUrl) {
-                          <img [src]="u.avatarUrl" class="avatar-img" />
-                        } @else {
-                          {{ u.username.charAt(0).toUpperCase() }}
-                        }
-                      </div>
-                      <div class="forward-item-info">
-                        <span class="room-name">{{ u.username }}</span>
-                        <span class="forward-item-sub" [class.online]="chat.onlineUserIds().has(u.id)">{{ chat.onlineUserIds().has(u.id) ? 'online' : 'offline' }}</span>
-                      </div>
-                    </div>
-                  } @empty {
-                    <div class="forward-empty">No users</div>
-                  }
-                }
-              </div>
-            </div>
-          </div>
-        }
-        @if (chat.activeRoom()) {
-          @if (deletingMsg()) {
-            <div class="forward-overlay" (click)="deletingMsg.set(null)">
-              <div class="delete-dialog" (click)="$event.stopPropagation()">
-                <div class="delete-dialog-title">Delete message?</div>
-                <div class="delete-dialog-preview">“{{ deletingMsg()!.content.length > 50 ? deletingMsg()!.content.substring(0, 50) + '...' : deletingMsg()!.content }}”</div>
-                <div class="delete-dialog-actions">
-                  @if (deletingMsg()!.senderId === auth.user()?.id) {
-                    <button class="delete-btn everyone" (click)="confirmDeleteForEveryone()">Delete for everyone</button>
-                  }
-                  <button class="delete-btn forme" (click)="confirmDeleteForMe()">Delete for me</button>
-                  <button class="delete-btn cancel" (click)="deletingMsg.set(null)">Cancel</button>
-                </div>
-              </div>
-            </div>
-          }
-          <div class="chat-header">
-            <button class="btn-back" (click)="backToList()">←</button>
-            <div class="avatar avatar-header">
-              @if (getRoomAvatar(chat.activeRoom()!)) {
-                <img [src]="getRoomAvatar(chat.activeRoom()!)" class="avatar-img" />
-              } @else {
-                {{ getRoomInitial(chat.activeRoom()!) }}
-              }
-            </div>
-            <div class="header-info">
-              <div class="header-name">{{ getRoomName(chat.activeRoom()!) }}</div>
-              @if (typingText()) {
-                <div class="header-sub typing-text">{{ typingText() }}</div>
-              } @else if (chat.activeRoom()!.isGroup) {
-                <div class="header-sub">{{ chat.activeRoom()!.members.length }} members</div>
-              } @else {
-                <div class="header-sub" [class.online]="isUserOnline(chat.activeRoom()!)">
-                  {{ isUserOnline(chat.activeRoom()!) ? 'online' : 'offline' }}
-                </div>
-              }
-            </div>
-            @if (chat.activeRoom()!.isGroup && isActiveRoomJoined()) {
-              <button class="btn-exit" (click)="exitGroup()">Exit Group</button>
-            }
-          </div>
-
-          @if (isActiveRoomJoined()) {
-            @if (chat.pinnedMessage()) {
-              <div class="pinned-bar" (click)="scrollToMessage(chat.pinnedMessage()!.id)">
-                <span class="pinned-icon">📌</span>
-                <div class="pinned-content">
-                  <span class="pinned-label">Pinned Message</span>
-                  <span class="pinned-text">{{ chat.pinnedMessage()!.content }}</span>
-                </div>
-                <button class="pinned-unpin" (click)="$event.stopPropagation(); unpinMsg()">✕</button>
-              </div>
-            }
-            <div class="messages" #messagesContainer>
-              @if (chat.messagesLoading()) {
-                <div class="messages-loader">
-                  <div class="chat-spinner"></div>
-                  <span>Loading messages...</span>
-                </div>
-              }
-              <div class="messages-inner">
-              @for (msg of chat.activeMessages(); track msg.id) {
-                @if (msg.isSystem) {
-                  <div class="system-msg"><span>{{ msg.content }}</span></div>
-                } @else if (msg.deletedFor?.includes(auth.user()?.id || '')) {
-                } @else if (msg.deletedForEveryone) {
-                  <div class="msg-row" [class.own]="msg.senderId === auth.user()?.id">
-                    <div class="msg-wrapper">
-                      <div class="bubble deleted-bubble" [class.own]="msg.senderId === auth.user()?.id">
-                        <span class="deleted-text">🚫 This message was deleted</span>
-                      </div>
-                    </div>
-                  </div>
-                } @else {
-                  <div class="msg-row" [attr.id]="'msg-' + msg.id" [class.own]="msg.senderId === auth.user()?.id" [class.highlighted]="highlightedMsgId() === msg.id">
-                    <div class="msg-wrapper">
-                      <div class="msg-actions-top" [class.own]="msg.senderId === auth.user()?.id">
-                        <button class="msg-action-btn" (click)="toggleReactionPicker(msg.id)" title="React">😊</button>
-                        <button class="msg-action-btn" (click)="openForwardPicker(msg)" title="Forward">↪️</button>
-                        <button class="msg-action-btn" (click)="setReply(msg)" title="Reply">↩️</button>
-                        <button class="msg-action-btn" (click)="pinMsg(msg)" title="Pin">📌</button>
-                        <button class="msg-action-btn" (click)="openDeleteDialog(msg)" title="Delete">🗑️</button>
-                      </div>
-                      <div class="bubble" [class.own]="msg.senderId === auth.user()?.id">
-                        @if (msg.senderId !== auth.user()?.id && chat.activeRoom()!.isGroup) {
-                          <div class="msg-sender">{{ msg.senderName }}</div>
-                        }
-                        @if (msg.forwarded) {
-                          <div class="msg-forwarded">Forwarded from {{ msg.forwardedFrom }}</div>
-                        }
-                        @if (msg.replyToId) {
-                          <div class="reply-preview-bubble" (click)="$event.stopPropagation(); scrollToMessage(msg.replyToId!)">
-                            <span class="reply-sender">{{ msg.replyToSender }}</span>
-                            <span class="reply-text">{{ msg.replyToContent }}</span>
-                          </div>
-                        }
-                        <div class="msg-body">
-                          @if (msg.fileUrl) {
-                            @if (msg.fileType?.startsWith('image/')) {
-                              <img class="msg-image" [src]="msg.fileUrl" [alt]="msg.fileName" (click)="openFile(msg.fileUrl!)" />
-                            } @else {
-                              <a class="msg-file" [href]="msg.fileUrl" target="_blank">
-                                <span class="msg-file-icon">📄</span>
-                                <span class="msg-file-name">{{ msg.fileName }}</span>
-                              </a>
-                            }
-                          }
-                          @if (!msg.fileUrl || msg.content !== '📷 Photo') {
-                            <span class="msg-content" [innerHTML]="formatMessage(msg.content)"></span>
-                          }
-                          <span class="msg-meta">
-                            <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
-                            @if (msg.senderId === auth.user()?.id) {
-                              <span class="msg-tick" [class.delivered]="msg.status === 'delivered'" [class.read]="msg.status === 'read'">
-                                @if (msg.status === 'sent') { ✓ }
-                                @if (msg.status === 'delivered') { ✓✓ }
-                                @if (msg.status === 'read') { ✓✓ }
-                                @if (!msg.status) { ✓ }
-                              </span>
-                            }
-                          </span>
-                        </div>
-                      </div>
-                      @if (hasReactions(msg)) {
-                        <div class="reactions-bar" [class.own]="msg.senderId === auth.user()?.id">
-                          @for (r of getReactionEntries(msg); track r.emoji) {
-                            <span class="reaction-chip" [class.reacted]="r.userIds.includes(auth.user()?.id || '')" (click)="react(msg, r.emoji)">
-                              {{ r.emoji }} {{ r.userIds.length }}
-                            </span>
-                          }
-                        </div>
-                      }
-                      @if (reactionPickerMsgId() === msg.id) {
-                        <div class="reaction-picker" [class.own]="msg.senderId === auth.user()?.id">
-                          @for (e of quickReactions; track e) {
-                            <span class="reaction-option" (click)="react(msg, e)">{{ e }}</span>
-                          }
-                        </div>
-                      }
-                    </div>
-                  </div>
-                }
-              }
-              </div>
-            </div>
-
-            @if (typingText()) {
-              <div class="typing-indicator">{{ typingText() }}</div>
-            }
-
-            <div class="input-area">
-              @if (replyingTo()) {
-                <div class="reply-bar">
-                  <div class="reply-bar-content">
-                    <span class="reply-bar-sender">{{ replyingTo()!.senderName }}</span>
-                    <span class="reply-bar-text">{{ replyingTo()!.content.length > 60 ? replyingTo()!.content.substring(0, 60) + '...' : replyingTo()!.content }}</span>
-                  </div>
-                  <button class="reply-bar-close" (click)="replyingTo.set(null)">✕</button>
-                </div>
-              }
-              <div class="input-row">
-                <button class="btn-emoji" (click)="showEmojiPicker.set(!showEmojiPicker())">😊</button>
-                <button class="btn-emoji" (click)="fileInput.click()">📎</button>
-                <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.txt" />
-                <textarea #msgInput [(ngModel)]="messageText" placeholder="Type a message..." (keydown)="onKeyDown($event)" (input)="onTyping()" rows="1"></textarea>
-                <button (click)="send()">Send</button>
-              </div>
-              @if (filePreview()) {
-                <div class="file-preview">
-                  @if (filePreview()!.isImage) {
-                    <img [src]="filePreview()!.dataUrl" alt="preview" />
-                  } @else {
-                    <span class="file-icon">📄</span>
-                  }
-                  <div class="file-info">
-                    <span class="file-name">{{ filePreview()!.name }}</span>
-                    <span class="file-size">{{ formatFileSize(filePreview()!.size) }}</span>
-                  </div>
-                  <button class="file-remove" (click)="clearFile()">✕</button>
-                </div>
-              }
-              @if (showEmojiPicker()) {
-                <div class="emoji-picker">
-                  <div class="emoji-tabs">
-                    @for (cat of emojiCategories; track cat.name) {
-                      <button [class.active]="activeEmojiTab() === cat.name" (click)="activeEmojiTab.set(cat.name)">{{ cat.icon }}</button>
-                    }
-                  </div>
-                  <div class="emoji-grid">
-                    @for (emoji of getActiveEmojis(); track emoji) {
-                      <span class="emoji-item" (click)="insertEmoji(emoji)">{{ emoji }}</span>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          } @else {
-            <div class="join-required">
-              <div class="join-required-icon">🔒</div>
-              <div class="join-required-title">Join "{{ chat.activeRoom()!.name }}" to start chatting</div>
-              <div class="join-required-subtitle">You need to join this group to see messages and participate</div>
-              <button class="btn-join-large" (click)="joinGroup(chat.activeRoom()!.id)">Join Group</button>
-            </div>
-          }
-        } @else {
-          <div class="no-chat">
-            <div style="font-size:3rem">💬</div>
-            <div>Select a chat or start a new conversation</div>
-          </div>
-        }
-      </main>
-    </div>
-  `,
+    templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements OnInit, OnDestroy {
@@ -471,17 +40,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   private typingTimeout: any;
   private audioCtx?: AudioContext;
 
-  emojiCategories = [
-    { name: 'smileys', icon: '😊', emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','😮‍💨','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','😟','🙁','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖'] },
-    { name: 'gestures', icon: '👋', emojis: ['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🫀','🫁','🦷','🦴','👀','👁️','👅','👄'] },
-    { name: 'hearts', icon: '❤️', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','♥️','💋','💌','💐','🌹','🥀','💍','💎'] },
-    { name: 'animals', icon: '🐶', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🪱','🐛','🦋','🐌','🐞','🐜','🪰','🪲','🪳','🦟','🦗','🕷️','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊'] },
-    { name: 'food', icon: '🍕', emojis: ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','🫖','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊'] },
-    { name: 'travel', icon: '✈️', emojis: ['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍️','🛵','🚲','🛴','🛹','🛼','🚁','✈️','🛩️','🚀','🛸','🚢','⛵','🚤','🛥️','🛳️','⛴️','🚂','🚃','🚄','🚅','🚆','🚇','🚈','🚉','🚊','🚝','🚞','🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏬','🏭','🏯','🏰','💒','🗼','🗽','⛪','🕌','🛕','🕍','⛩️','🕋'] },
-    { name: 'objects', icon: '⚽', emojis: ['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒','🥍','🏑','🥅','⛳','🪁','🏹','🎣','🤿','🥊','🥋','🎽','🛹','🛼','🛷','⛸️','🥌','🎿','⛷️','🏂','🪂','🏋️','🎯','🎮','🕹️','🎲','🧩','🎭','🎨','🎬','🎤','🎧','🎼','🎹','🥁','🪘','🎷','🎺','🪗','🎸','🪕','🎻','🎪','💻','📱','📞','📷','📹','🔔','🔑','🗝️','💡','📚','✏️','🖊️'] },
-  ];
-
-  quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
+  emojiCategories = EMOJI_CATEGORIES;
+  quickReactions = QUICK_REACTIONS;
 
   toggleMsgMenu(msgId: string) {
     this.msgMenuId.set(this.msgMenuId() === msgId ? null : msgId);
@@ -643,9 +203,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   formatFileSize(bytes: number): string {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    return formatFileSize(bytes);
   }
 
   openFile(url: string) { window.open(url, '_blank'); }
@@ -661,22 +219,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.auth.toggleTheme().subscribe();
   }
 
-  private fmtBold = /\*(.*?)\*/g;
-  private fmtItalic = /_(.*?)_/g;
-  private fmtStrike = /~(.*?)~/g;
-  private fmtCode = /`(.*?)`/g;
-
-  formatMessage(content: string): string {
-    let html = content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    html = html.replace(this.fmtBold, '<strong>$1</strong>');
-    html = html.replace(this.fmtItalic, '<em>$1</em>');
-    html = html.replace(this.fmtStrike, '<del>$1</del>');
-    html = html.replace(this.fmtCode, '<code>$1</code>');
-    html = html.replace(/\n/g, '<br>');
-    return html;
+  formatMessage(content: string): SafeHtml {
+    return formatMessageContent(content, this.sanitizer);
   }
 
   onKeyDown(event: KeyboardEvent) {
@@ -719,7 +263,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     return list.filter((g) => g.name.toLowerCase().includes(q));
   });
 
-  constructor(public auth: AuthService, public chat: ChatService, private router: Router, private toast: ToastService) {
+  constructor(public auth: AuthService, public chat: ChatService, private router: Router, private toast: ToastService, private sanitizer: DomSanitizer) {
     effect(() => {
       const map = this.chat.typingUsers();
       const names = [...map.values()];
@@ -744,6 +288,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.chat.disconnect();
     this.chat.onIncomingMessage = null;
+    if (this.audioCtx) {
+      this.audioCtx.close();
+      this.audioCtx = undefined;
+    }
   }
 
   getRoomName(room: Room): string {
