@@ -1,8 +1,8 @@
 <div class="chat-layout">
   <aside class="sidebar" [class.mobile-hidden]="showMobileChat()">
     <div class="sidebar-header">
-      <div class="header-user" (click)="goToSettings()" style="cursor:pointer">
-        <div class="avatar avatar-sm">
+      <div class="header-user group" (click)="goToSettings()" style="cursor:pointer">
+        <div class="avatar avatar-sm ring-2 ring-white/30 transition-all duration-300 group-hover:ring-white/60 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.2)]">
           @if (auth.user()?.avatarUrl) {
             <img [src]="auth.user()!.avatarUrl" class="avatar-img" />
           } @else {
@@ -12,22 +12,35 @@
         <span class="header-username">{{ auth.user()?.username }}</span>
       </div>
       <div class="header-actions">
-        <button class="btn-sm" (click)="toggleTheme()">{{ auth.isDark() ? '☀️' : '🌙' }}</button>
-        <button class="btn-sm" (click)="goToSettings()">⚙️</button>
-        <button class="btn-sm" (click)="onLogout()">Logout</button>
+        <button class="btn-icon-header transition-all duration-200 hover:scale-110 hover:bg-white/20 active:scale-90" (click)="toggleTheme()">{{ auth.isDark() ? '☀️' : '🌙' }}</button>
+        <button class="btn-icon-header transition-all duration-200 hover:scale-110 hover:bg-white/20 active:scale-90" (click)="goToSettings()">⚙️</button>
+        <button class="btn-logout transition-all duration-200 hover:bg-red-500/90 active:scale-95" (click)="onLogout()">Logout</button>
       </div>
     </div>
 
-    <!-- Search / Actions -->
-    <div class="sidebar-actions">
-      <button class="btn-action" [class.active]="activeTab() === 'chats'" (click)="activeTab.set('chats')">Chats</button>
-      <button class="btn-action" [class.active]="activeTab() === 'users'" (click)="activeTab.set('users'); refreshUsers()">Users</button>
-      <button class="btn-action groups-btn" [class.active]="activeTab() === 'groups'" (click)="openGroups()">
-        Groups @if (chat.newGroupAvailable()) { <span class="new-badge">NEW</span> }
+    <!-- Tab Navigation -->
+    <div class="sidebar-tabs">
+      <button class="sidebar-tab" [class.active]="activeTab() === 'chats'" (click)="activeTab.set('chats')">
+        <span class="tab-icon">💬</span>
+        <span class="tab-label">Chats</span>
+      </button>
+      <button class="sidebar-tab" [class.active]="activeTab() === 'users'" (click)="activeTab.set('users'); refreshUsers()">
+        <span class="tab-icon">👤</span>
+        <span class="tab-label">Users</span>
+      </button>
+      <button class="sidebar-tab" [class.active]="activeTab() === 'groups'" (click)="openGroups()">
+        <span class="tab-icon">👥</span>
+        <span class="tab-label">Groups</span>
+        @if (chat.newGroupAvailable()) { <span class="new-badge">NEW</span> }
       </button>
     </div>
+
+    <!-- Search -->
     <div class="search-bar">
-      <input [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" placeholder="Search chats, users..." />
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" placeholder="Search..." />
+      </div>
     </div>
 
     <!-- TAB: Chats -->
@@ -256,7 +269,7 @@
           }
         </div>
         @if (chat.activeRoom()!.isGroup && isActiveRoomJoined()) {
-          <button class="btn-exit" (click)="exitGroup()">Exit Group</button>
+          <button class="btn-exit transition-all duration-200 active:scale-95" (click)="exitGroup()">Exit Group</button>
         }
       </div>
 
@@ -383,7 +396,7 @@
             <button class="btn-emoji" (click)="fileInput.click()">📎</button>
             <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.txt" />
             <textarea #msgInput [(ngModel)]="messageText" placeholder="Type a message..." (keydown)="onKeyDown($event)" (input)="onTyping()" rows="1"></textarea>
-            <button (click)="send()">Send</button>
+            <button class="transition-all duration-200 hover:shadow-glow active:scale-95" (click)="send()">Send</button>
           </div>
           @if (filePreview()) {
             <div class="file-preview">
@@ -424,8 +437,8 @@
       }
     } @else {
       <div class="no-chat">
-        <div style="font-size:3rem">💬</div>
-        <div>Select a chat or start a new conversation</div>
+        <div class="text-5xl drop-shadow-sm">💬</div>
+        <div class="text-sm opacity-80">Select a chat or start a new conversation</div>
       </div>
     }
   </main>

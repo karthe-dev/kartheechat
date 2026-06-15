@@ -1,1 +1,4 @@
-<router-outlet /><app-toast />
+<div class="app-shell" [@routeAnimation]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet" />
+</div>
+<app-toast />

@@ -1,11 +1,11 @@
 <div class="auth-container">
-  <div class="auth-card">
+  <div class="auth-card shadow-card">
     <p class="auth-subtitle">{{ isRegister() ? 'Sign up to start chatting' : 'Login to continue' }}</p>
     @if (error()) { <div class="error">{{ error() }}</div> }
     <form (ngSubmit)="submit()">
-      <input [(ngModel)]="username" name="username" placeholder="Username" required />
-      <input [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
-      <button type="submit" [disabled]="loading()">
+      <input class="transition-all duration-200 focus:shadow-glow-sm" [(ngModel)]="username" name="username" placeholder="Username" required />
+      <input class="transition-all duration-200 focus:shadow-glow-sm" [(ngModel)]="password" name="password" type="password" placeholder="Password" required />
+      <button class="transition-all duration-200 hover:shadow-glow active:scale-[0.98]" type="submit" [disabled]="loading()">
         @if (loading()) {
           <span class="spinner"></span>
         } @else {

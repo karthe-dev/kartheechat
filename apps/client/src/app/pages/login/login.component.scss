@@ -1,3 +1,5 @@
+@use '../../animations/animations';
+
 .auth-container {
   display: flex;
   flex-direction: column;
@@ -22,6 +24,7 @@
   color: #111b21;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  animation: cardEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 :host-context(body.dark-theme) .auth-card {
