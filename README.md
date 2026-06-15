@@ -14,6 +14,8 @@ A full-featured real-time chat application built with **Angular 20** and **NestJ
 | Auth | JWT + Passport + bcrypt |
 | Database | Supabase (PostgreSQL) |
 | File Storage | Supabase Storage (KartheBucket) |
+| Styling | SCSS + Tailwind CSS v4 (Hybrid) |
+| Animations | CSS Keyframes + Angular Animations |
 | Dev Server | Nodemon (auto-restart on changes) |
 | Monorepo | npm Workspaces |
 
@@ -27,14 +29,29 @@ chat-app/
 │   ├── client/                    # Angular frontend
 │   │   └── src/
 │   │       ├── app/
+│   │       │   ├── animations/
+│   │       │   │   ├── _animations.scss      # Reusable CSS keyframes
+│   │       │   │   └── route.animations.ts   # Angular route transitions
 │   │       │   ├── components/
-│   │       │   │   └── toast.component.ts
+│   │       │   │   ├── toast.component.ts
+│   │       │   │   ├── toast.component.html
+│   │       │   │   └── toast.component.scss
 │   │       │   ├── guards/
 │   │       │   │   └── auth.guard.ts
 │   │       │   ├── pages/
 │   │       │   │   ├── login/
+│   │       │   │   │   ├── login.component.ts
+│   │       │   │   │   ├── login.component.html
+│   │       │   │   │   └── login.component.scss
 │   │       │   │   ├── chat/
+│   │       │   │   │   ├── chat.component.ts
+│   │       │   │   │   ├── chat.component.html
+│   │       │   │   │   ├── chat.component.scss
+│   │       │   │   │   └── utils/chat.utils.ts
 │   │       │   │   └── settings/
+│   │       │   │       ├── settings.component.ts
+│   │       │   │       ├── settings.component.html
+│   │       │   │       └── settings.component.scss
 │   │       │   ├── services/
 │   │       │   │   ├── auth.service.ts
 │   │       │   │   ├── auth.interceptor.ts
@@ -42,8 +59,11 @@ chat-app/
 │   │       │   │   └── toast.service.ts
 │   │       │   ├── app.routes.ts
 │   │       │   ├── app.config.ts
-│   │       │   └── app.component.ts
-│   │       ├── styles.scss
+│   │       │   ├── app.component.ts
+│   │       │   ├── app.component.html
+│   │       │   └── app.component.scss
+│   │       ├── tailwind.css           # Tailwind v4 + custom theme
+│   │       ├── styles.scss            # Global styles + CSS variables
 │   │       └── index.html
 │   │
 │   └── server/                    # NestJS backend
@@ -268,6 +288,48 @@ chat-app/
 
 ---
 
+## UI/UX Design & Animations
+
+### Design System
+- **Tailwind CSS v4** (hybrid with SCSS) — custom theme tokens for colors, shadows
+- **Gradient headers** — Sidebar and chat header with `green → teal` gradient
+- **Modern message bubbles** — Colored side borders instead of arrow tails, subtle gradient on own messages
+- **Glassmorphic elements** — Backdrop blur on reaction pickers, frosted logout button
+- **Depth via shadows** — Layered `box-shadow` for cards, buttons, and elevated elements
+
+### Animations (CSS + Angular)
+| Animation | Element | Effect |
+|-----------|---------|--------|
+| Message entrance | Chat bubbles | Slide up + fade + scale |
+| Typing dots | Typing indicator | Animated `...` via CSS steps |
+| Sidebar slide | Mobile toggle | Slide from right |
+| Reaction popup | Emoji picker | Scale bounce with staggered children |
+| Unread badge | Sidebar badges | Elastic pop-in |
+| Online pulse | Status dots | Breathing scale + glow |
+| Route transition | Page navigation | Fade + translateY (Angular Animations) |
+| Toast notification | Top-right alerts | Slide in/out from right |
+| Pinned bar | Below header | Slide down expand |
+| Modal entrance | Forward/Delete dialogs | Overlay fade + zoom bounce |
+| Card entrance | Login/Settings | Scale up + fade |
+| Action buttons | Message hover | Staggered fade-in with delay |
+| Emoji picker | Input area | Slide up expand |
+
+### Micro-interactions (Tailwind)
+- `ring` glow on avatar hover
+- `scale-110` / `scale-95` on button interactions
+- `translateX(2px)` on room item hover
+- Focus ring glow on inputs (`box-shadow`)
+- `translateY(-1px)` lift on send button hover
+- Gradient send button with elevated shadow
+
+### Responsive Breakpoints
+| Breakpoint | Adaptations |
+|------------|-------------|
+| ≤768px (Tablet) | Narrower sidebar (300px), reduced padding |
+| ≤576px (Mobile) | Full-screen sidebar/chat toggle, compact tabs, smaller bubbles, hidden decorations |
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -313,6 +375,7 @@ npm run start:client    # http://localhost:4200 (ng serve)
 5. Test: emojis, reactions, reply, forward, pin, delete, file upload
 6. Test: typing indicators, online status, read receipts
 7. Test: dark mode, search, mobile viewport (F12 → device toolbar)
+8. Test: animations on route change, message entrance, reaction pickers
 
 ---
 
@@ -333,6 +396,10 @@ npm run start:client    # http://localhost:4200 (ng serve)
 │  │          │ │ Pin/Delete │ │          │ │              │  │
 │  │          │ │ Emoji/File │ │          │ │              │  │
 │  └──────────┘ └────────────┘ └──────────┘ └─────────────┘  │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │  Tailwind CSS v4 + SCSS + Angular Animations           │  │
+│  │  Route transitions | Keyframe animations | Utilities   │  │
+│  └───────────────────────────────────────────────────────┘  │
 │                     │ HTTP + WebSocket │                      │
 └─────────────────────┼─────────────────┼──────────────────────┘
                       │                 │
